@@ -4,7 +4,7 @@ GPIO.setmode(GPIO.BCM)
 
 # Максимально и минимально возможные
 # напряжения на данной плате
-MAXV = 206
+MAXV = 207
 MINV = 168
 
 # Задержка в ЦАП
@@ -50,11 +50,17 @@ try:
                 GPIO.output(TROYKA, GPIO.LOW)
             elif n == MINV and GPIO.input(TROYKA) == GPIO.LOW:
                 GPIO.output(TROYKA, GPIO.HIGH)
+                # End the program
+                break
 finally:
     end_time = time.time()
     
-    with open('measurments.csv', 'wt') as o:
-        o.write(f'{end_time - start_time}\n')
+    with open('settings.txt', 'wt') as o:
+        # Сначала - частота дискретизации
+        # Затем - шаг квантования
+        o.write(f'{(end_time - start_time)/len(measurments)}\n{3.3/2**8}')
+    
+    with open('measurments.txt', 'wt') as o:
         o.write('\n'.join([str(x) for x in measurments]))
     
     GPIO.output(DAC, GPIO.LOW)
